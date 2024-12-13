@@ -8,8 +8,8 @@ variable "cidr_block" {
   type        = string
 }
 
-variable "subnet_cidr_block" {
-  description = "CIDR block for the subnet"
+variable "public_subnet_cidr_block" {
+  description = "CIDR block for the public subnet"
   type        = string
 }
 

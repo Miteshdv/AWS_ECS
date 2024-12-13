@@ -14,23 +14,27 @@ provider "aws" {
   secret_key = var.aws_secret_key
 }
 
+module "iam" {
+  source = "./modules/iam"
+}
+
 
 module "vpc" {
-  source            = "./modules/vpc"
-  name              = "example-vpc"
-  cidr_block        = "10.0.0.0/16"
-  subnet_cidr_block = "10.0.1.0/24"
-  availability_zone = "us-west-2a"
+  source                   = "./modules/vpc"
+  name                     = "ecs-vpc"
+  cidr_block               = "10.0.0.0/16"
+  public_subnet_cidr_block = "10.0.1.0/24"
+  availability_zone        = "us-west-2a"
 }
 
 module "security_group" {
   source = "./modules/security"
 
   name                = "ec2-sg"
-  description         = "Example security group"
+  description         = "ECS security group"
   vpc_id              = module.vpc.vpc_id
-  ingress_from_port   = 22
-  ingress_to_port     = 22
+  ingress_from_port   = 8000
+  ingress_to_port     = 8000
   ingress_protocol    = "tcp"
   ingress_cidr_blocks = ["0.0.0.0/0"]
   egress_from_port    = 0
@@ -50,9 +54,11 @@ module "ec2" {
   volume_size                 = 8
   volume_type                 = "gp2"
   associate_public_ip_address = true
-  subnet_id                   = module.vpc.subnet_id
+  subnet_id                   = module.vpc.public_subnet_id
   security_groups             = [module.security_group.security_group_id]
   key_name                    = var.key_name
+  iam_instance_profile        = module.iam.instance_profile_name
+  user_data                   = "user-data.sh"
   tags = {
     Name = "ec2-server-instance"
   }
