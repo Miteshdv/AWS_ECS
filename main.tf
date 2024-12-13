@@ -20,11 +20,11 @@ module "iam" {
 
 
 module "vpc" {
-  source                   = "./modules/vpc"
-  name                     = "ecs-vpc"
-  cidr_block               = "10.0.0.0/16"
-  public_subnet_cidr_block = "10.0.1.0/24"
-  availability_zone        = "us-west-2a"
+  source                    = "./modules/vpc"
+  name                      = "ecs-vpc"
+  cidr_block                = "10.0.0.0/16"
+  public_subnet_cidr_blocks = ["10.0.1.0/24", "10.0.2.0/24"]
+  availability_zones        = ["us-west-2a", "us-west-2b"]
 }
 
 module "security_group" {
@@ -45,22 +45,24 @@ module "security_group" {
 
 
 
-module "ec2" {
-  source                      = "./modules/ec2"
-  name_prefix                 = "python-server"
-  image_id                    = "ami-055e3d4f0bbeb5878" # Replace with your desired AMI ID
-  instance_type               = "t2.micro"
-  device_name                 = "/dev/xvda"
-  volume_size                 = 8
-  volume_type                 = "gp2"
-  associate_public_ip_address = true
-  subnet_id                   = module.vpc.public_subnet_id
-  security_groups             = [module.security_group.security_group_id]
-  key_name                    = var.key_name
-  iam_instance_profile        = module.iam.instance_profile_name
-  user_data                   = "user-data.sh"
-  tags = {
-    Name = "ec2-server-instance"
-  }
+module "eks" {
+  source           = "./modules/eks"
+  cluster_name     = "python-eks-cluster"
+  cluster_role_arn = module.iam.eks_cluster_role_arn
+  subnet_ids       = module.vpc.public_subnet_ids
+}
+
+module "eks_workers" {
+  source               = "./modules/eks_workers"
+  cluster_name         = module.eks.cluster_name
+  image_id             = "ami-055e3d4f0bbeb5878" # Replace with your desired AMI ID
+  instance_type        = "t2.micro"
+  key_name             = var.key_name
+  security_groups      = [module.security_group.security_group_id]
+  subnet_ids           = module.vpc.public_subnet_ids
+  desired_capacity     = 2
+  max_size             = 3
+  min_size             = 1
+  iam_instance_profile = module.iam.eks_worker_profile_name
 }
 
