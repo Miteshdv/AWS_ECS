@@ -28,6 +28,11 @@ variable "volume_type" {
   type        = string
 }
 
+variable "iam_instance_profile" {
+  description = "IAM instance profile name"
+  type        = string
+}
+
 variable "associate_public_ip_address" {
   description = "Whether to associate a public IP address"
   type        = bool
@@ -57,4 +62,8 @@ variable "key_name" {
   type        = string
 }
 
+variable "user_data" {
+  description = "Path to the user data script"
+  type        = string
+}
 

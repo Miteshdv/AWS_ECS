@@ -34,10 +34,12 @@ resource "aws_instance" "ec2_instance" {
   subnet_id                   = var.subnet_id
   key_name                    = var.key_name
   associate_public_ip_address = var.associate_public_ip_address
-
+  iam_instance_profile        = var.iam_instance_profile
   launch_template {
     id      = aws_launch_template.ec2_lt.id
     version = "$Latest"
   }
-  tags = var.tags
+
+  user_data = file(var.user_data)
+  tags      = var.tags
 }
