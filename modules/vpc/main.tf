@@ -7,7 +7,7 @@ resource "aws_vpc" "eks_vpc" {
 }
 
 resource "aws_internet_gateway" "vpc_ig" {
-  vpc_id = aws_vpc.eks_vpc.ids
+  vpc_id = aws_vpc.eks_vpc.id
 
   tags = {
     Name = var.name
