@@ -8,7 +8,3 @@ output "eks_worker_profile_name" {
   value       = aws_iam_instance_profile.eks_worker_profile.name
 }
 
-output "lambda_role_arn" {
-  description = "The ARN of the IAM role for Lambda"
-  value       = aws_iam_role.lambda_role.arn
-}
