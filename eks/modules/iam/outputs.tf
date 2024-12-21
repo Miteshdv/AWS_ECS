@@ -1,10 +1,15 @@
-output "eks_cluster_role_arn" {
-  description = "ARN of the EKS cluster role"
-  value       = aws_iam_role.eks_cluster_role.arn
+output "eks_cluster_role_name" {
+  value = aws_iam_role.eks_cluster_role.name
 }
 
 output "eks_worker_profile_name" {
-  description = "The name of the IAM instance profile for EKS workers"
-  value       = aws_iam_instance_profile.eks_worker_profile.name
+  value = aws_iam_instance_profile.eks_worker_profile.name
 }
 
+output "eks_worker_role_arn" {
+  value = aws_iam_role.eks_worker_role.arn
+}
+
+output "alb_ingress_controller_role_arn" {
+  value = aws_iam_role.alb_ingress_controller.arn
+}
